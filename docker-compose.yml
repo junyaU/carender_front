@@ -1,0 +1,12 @@
+version: "3"
+services:
+  calender-front:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/src/app:cached
+    command: sh -c "cd calender && yarn start"
+    ports:
+      - "3000:3000"
+    tty: true
