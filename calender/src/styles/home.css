@@ -1,0 +1,74 @@
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.calender-wrapper {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.weeks-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.week-text {
+  font-size: 20px;
+  margin: 0;
+}
+
+.day-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.cell {
+  width: 80px;
+  height: 80px;
+  border: 1px solid #dddddd;
+}
+
+.week-cell {
+  height: 30px;
+}
+
+.day-text {
+  margin: 0;
+  width: 20%;
+  padding: 5%;
+  border-radius: 50%;
+}
+
+.change-button-wrapper {
+  display: flex;
+  justify-content: space-around;
+  width: 20%;
+  margin: 0 auto;
+  margin-top: 2%;
+}
+
+.calender-head-text {
+  margin: 0;
+}
+
+.button {
+  margin: 0 1%;
+}
+
+.modal-content-wrapper {
+  background-color: #ffffff;
+  width: 30%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  text-align: center;
+  padding: 2%;
+}
+
+.plan-name {
+  margin: 3%;
+  background-color: #dcdcdcdc;
+  font-size: 12px;
+}
