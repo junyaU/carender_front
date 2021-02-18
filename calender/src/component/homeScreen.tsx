@@ -1,12 +1,37 @@
 import React, { useEffect } from 'react';
-import { getScheduleData, showInputModal, registerSchedule } from '../services/homeService';
+import {
+  getScheduleData,
+  showInputModal,
+  registerSchedule,
+  showScheduleDetailModal,
+  deleteSchedule,
+} from '../services/homeService';
 import '../styles/home.css';
-import { Button, Modal, Select, MenuItem } from '@material-ui/core';
+import { Button, Modal } from '@material-ui/core';
+import Select from 'react-select';
 import { HomeContainer, HomeContainerType } from '../container/homeContainer';
 import { useContainer } from 'unstated-next';
 import { InputArea } from './UI/Input';
+import { timeData } from '../data/timeData';
 
-const Calender = ({ homeContainer }: { homeContainer: HomeContainerType }) => {
+type ScheduleDataType = {
+  Id: number;
+  Name: string;
+  Year: string;
+  Month: string;
+  Day: string;
+  ScheduleTime: StaticRange;
+};
+
+type CalenderDayType = {
+  year: number;
+  month: number;
+  day: number;
+  week: string;
+  data: any[];
+};
+
+const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ homeContainer }) => {
   const weeks = ['日', '月', '火', '水', '木', '金', '土'];
   const today = new Date();
   const nowYear = today.getFullYear() + homeContainer.yearNum;
@@ -21,7 +46,10 @@ const Calender = ({ homeContainer }: { homeContainer: HomeContainerType }) => {
       month: nowMonth,
       day: w,
       week: weeks[new Date(nowYear, nowMonth - 1, w).getDay()],
-      color: w === today.getDate() && today.getMonth() + 1 === nowMonth ? '#FF6666' : '#FFFFFF',
+      color:
+        w === today.getDate() && today.getMonth() + 1 === nowMonth && nowYear === today.getFullYear()
+          ? '#FF6666'
+          : '#FFFFFF',
       data: [],
     };
     daysArr.push(dayData);
@@ -103,8 +131,9 @@ const Calender = ({ homeContainer }: { homeContainer: HomeContainerType }) => {
       break;
   }
 
-  homeContainer.scheduleData.forEach((schedule: { Year: string; Month: string; Day: string }) => {
-    daysArr.forEach((calenderDay: { year: number; month: number; day: number; data: any[] }) => {
+  // スケジュールデータ挿入
+  homeContainer.scheduleData.forEach((schedule: ScheduleDataType) => {
+    daysArr.forEach((calenderDay: CalenderDayType) => {
       if (
         Number(schedule.Year) === calenderDay.year &&
         Number(schedule.Month) === calenderDay.month &&
@@ -136,19 +165,29 @@ const Calender = ({ homeContainer }: { homeContainer: HomeContainerType }) => {
         {parseDaysArr.map((week, i) => (
           <div className="day-wrapper" key={i}>
             {week.map((day, ii) => (
-              <div
-                className="cell"
-                onClick={(e) => showInputModal(e, homeContainer)}
-                data-year={day.year}
-                data-month={day.month}
-                data-day={day.day}
-                key={ii}
-              >
-                <p className="day-text" style={{ backgroundColor: day.color }}>
+              <div className="cell" key={ii}>
+                <p
+                  className="day-text"
+                  style={{ backgroundColor: day.color }}
+                  data-year={day.year}
+                  data-month={day.month}
+                  data-day={day.day}
+                  onClick={(e) => showInputModal(e, homeContainer)}
+                >
                   {day.day}
                 </p>
-                {day.data.map((data, s) => (
-                  <p className="plan-name" key={s}>
+                {day.data.map((data: ScheduleDataType, s) => (
+                  <p
+                    className="plan-name"
+                    key={s}
+                    data-id={data.Id}
+                    data-name={data.Name}
+                    data-year={data.Year}
+                    data-month={data.Month}
+                    data-day={data.Day}
+                    data-time={data.ScheduleTime}
+                    onClick={(e) => showScheduleDetailModal(e, homeContainer)}
+                  >
                     {data.Name}
                   </p>
                 ))}
@@ -159,7 +198,7 @@ const Calender = ({ homeContainer }: { homeContainer: HomeContainerType }) => {
       </div>
     </div>
   );
-};
+});
 
 const ButtonArea: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ homeContainer }) => {
   return (
@@ -187,7 +226,7 @@ const ButtonArea: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({
 });
 
 const InputModal: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ homeContainer }) => {
-  const timeData = [12, 13, 14, 15, 16];
+  const times = timeData();
   return (
     <Modal
       open={homeContainer.modalShowValue}
@@ -206,13 +245,7 @@ const InputModal: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({
           onChange={(e: React.KeyboardEvent<HTMLInputElement>) => homeContainer.handleScheduleNameValue(e)}
           defaultValue={homeContainer.scheduleState.name}
         />
-        {/* <Select value="" displayEmpty>
-          {timeData.map((data, i) => (
-            <MenuItem value={data} key={i}>
-              {data}
-            </MenuItem>
-          ))}
-        </Select> */}
+        <Select options={times} onChange={(item: any) => homeContainer.handleScheduleTimeValue(item.value)} />
         <Button
           className="button"
           variant="contained"
@@ -227,16 +260,46 @@ const InputModal: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({
   );
 });
 
+const ScheduleDetailModal: React.FC<{ homeContainer: HomeContainerType }> = ({ homeContainer }) => {
+  return (
+    <Modal
+      open={homeContainer.scheduleModal}
+      onClose={() => homeContainer.setScheduleModal(false)}
+      aria-labelledby="simple-modal-title"
+      aria-describedby="simple-modal-description"
+    >
+      <div className="modal-content-wrapper">
+        <h3>
+          {homeContainer.scheduleDetailState.year}年{homeContainer.scheduleDetailState.month}月
+          {homeContainer.scheduleDetailState.day}日
+        </h3>
+        <p>{homeContainer.scheduleDetailState.time}</p>
+        <h2>{homeContainer.scheduleDetailState.name}</h2>
+        <Button
+          className="button"
+          variant="contained"
+          color="secondary"
+          size="large"
+          onClick={() => deleteSchedule(homeContainer)}
+        >
+          削除
+        </Button>
+      </div>
+    </Modal>
+  );
+};
+
 const HomeScreen: React.FC = () => {
   const homeContainer: HomeContainerType = useContainer(HomeContainer);
   useEffect(() => {
     getScheduleData(homeContainer);
-  }, []);
+  }, [homeContainer.getDataFlag]);
   return (
     <div>
       <Calender homeContainer={homeContainer} />
       <ButtonArea homeContainer={homeContainer} />
       <InputModal homeContainer={homeContainer} />
+      <ScheduleDetailModal homeContainer={homeContainer} />
     </div>
   );
 };

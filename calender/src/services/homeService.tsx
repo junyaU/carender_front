@@ -31,6 +31,19 @@ export const showInputModal = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, 
   homeContainer.setmodalShowValue(true);
 };
 
+export const showScheduleDetailModal = (
+  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  homeContainer: HomeContainerType
+) => {
+  homeContainer.handleScheduleDetailIdValue(Number(e.currentTarget.getAttribute('data-id')));
+  homeContainer.handleScheduleDetailNameValue(String(e.currentTarget.getAttribute('data-name')));
+  homeContainer.handleScheduleDetailYearValue(Number(e.currentTarget.getAttribute('data-year')));
+  homeContainer.handleScheduleDetailMonthValue(Number(e.currentTarget.getAttribute('data-month')));
+  homeContainer.handleScheduleDetailDayValue(Number(e.currentTarget.getAttribute('data-day')));
+  homeContainer.handleScheduleDetailTimeValue(String(e.currentTarget.getAttribute('data-time')));
+  homeContainer.setScheduleModal(true);
+};
+
 export const registerSchedule = async (homeContainer: HomeContainerType) => {
   const token: string | undefined = Cookies.get('calenderToken');
   if (!token) {
@@ -45,6 +58,11 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     homeContainer.handleScheduleNameError({ error: false, message: '' });
   }
 
+  if (!homeContainer.scheduleState.time) {
+    alert('時間を選択してください');
+    return;
+  }
+
   const decodeToken: TokenType = jwtDecode(token);
   const apiUrl: string = 'http://localhost:8080/registerSchedule';
   const formData: FormData = new FormData();
@@ -54,7 +72,7 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     year: String(homeContainer.dayState.year),
     month: String(homeContainer.dayState.month),
     day: String(homeContainer.dayState.date),
-    scheduledTime: '12:00',
+    scheduledTime: homeContainer.scheduleState.time,
   };
   Object.entries(data).forEach(([key, value]) => {
     formData.append(key, value);
@@ -66,4 +84,18 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     return;
   }
   homeContainer.setmodalShowValue(false);
+  homeContainer.setFlag((prev) => !prev);
+};
+
+export const deleteSchedule = async (homeContainer: HomeContainerType) => {
+  const deleteConfirm = window.confirm('この予定を削除しますか？');
+  if (!deleteConfirm) return;
+
+  const apiUrl: string = 'http://localhost:8080/deleteSchedule';
+  const formData: FormData = new FormData();
+  formData.append('id', String(homeContainer.scheduleDetailState.id));
+  await axios.post(apiUrl, formData);
+  homeContainer.handleScheduleTimeValue('');
+  homeContainer.setScheduleModal(false);
+  homeContainer.setFlag((prev) => !prev);
 };
