@@ -28,7 +28,7 @@ export const showInputModal = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, 
   homeContainer.handleYearValue(Number(e.currentTarget.getAttribute('data-year')));
   homeContainer.handleMonthValue(Number(e.currentTarget.getAttribute('data-month')));
   homeContainer.handleDateValue(Number(e.currentTarget.getAttribute('data-day')));
-  homeContainer.setmodalShowValue(true);
+  homeContainer.handleHomeModalInputToggle(true);
 };
 
 export const showScheduleDetailModal = (
@@ -41,7 +41,7 @@ export const showScheduleDetailModal = (
   homeContainer.handleScheduleDetailMonthValue(Number(e.currentTarget.getAttribute('data-month')));
   homeContainer.handleScheduleDetailDayValue(Number(e.currentTarget.getAttribute('data-day')));
   homeContainer.handleScheduleDetailTimeValue(String(e.currentTarget.getAttribute('data-time')));
-  homeContainer.setScheduleModal(true);
+  homeContainer.handleHomeModalDetailToggle(true);
 };
 
 export const registerSchedule = async (homeContainer: HomeContainerType) => {
@@ -89,7 +89,7 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     alert('スケジュールの作成に失敗しました');
     return;
   }
-  homeContainer.setmodalShowValue(false);
+  homeContainer.handleHomeModalInputToggle(false);
   homeContainer.handleScheduleTimeValue('');
   homeContainer.scheduleDispatch({ type: 'name', payload: { ...homeContainer.scheduleState, name: '' } });
   homeContainer.handleScheduleColorValue('');
@@ -104,13 +104,27 @@ export const deleteSchedule = async (homeContainer: HomeContainerType) => {
   const formData: FormData = new FormData();
   formData.append('id', String(homeContainer.scheduleDetailState.id));
   await axios.post(apiUrl, formData);
-  homeContainer.setScheduleModal(false);
+  homeContainer.handleHomeModalDetailToggle(false);
   homeContainer.setFlag((prev) => !prev);
 };
 
 export const closeInputModal = (homeContainer: HomeContainerType) => {
-  homeContainer.setmodalShowValue(false);
+  homeContainer.handleHomeModalInputToggle(false);
   homeContainer.scheduleDispatch({ type: 'name', payload: { ...homeContainer.scheduleState, name: '' } });
   homeContainer.handleScheduleColorValue('');
   homeContainer.handleScheduleTimeValue('');
+};
+
+export const openScheduleModal = (
+  homeContainer: HomeContainerType,
+  data: any,
+  year: number,
+  month: number,
+  day: number
+) => {
+  homeContainer.handleScheduleDetailYearValue(year);
+  homeContainer.handleScheduleDetailMonthValue(month);
+  homeContainer.handleScheduleDetailDayValue(day);
+  homeContainer.setDayScheduleData(data);
+  homeContainer.handleHomeModalScheduleToggle(true);
 };

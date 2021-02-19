@@ -107,3 +107,21 @@
 .color-blue {
   background-color: #0099ff;
 }
+
+.other-schedule {
+  margin: 0;
+  color: #808080;
+  font-size: 11px;
+  text-align: left;
+  margin-left: 5%;
+}
+
+.day-schedule-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 1%;
+}
+
+.time-text {
+  margin-right: 3%;
+}

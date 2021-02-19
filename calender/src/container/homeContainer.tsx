@@ -53,7 +53,6 @@ type ScheduleDetailState = {
   day: number;
   time: string;
 };
-
 const ScheduleDetailActionType = {
   id: 'id',
   name: 'name',
@@ -68,12 +67,27 @@ type ScheduleDetailAction = {
 };
 type ScheduleDetailActionTypes = typeof ScheduleDetailActionType[keyof typeof ScheduleDetailActionType];
 
+type HomeModalToggleState = {
+  detail: boolean;
+  input: boolean;
+  schedule: boolean;
+};
+type HomeModalToggleAction = {
+  type: HomeModalToggleActionTypes;
+  payload: HomeModalToggleState;
+};
+const HomeModalToggleActionType = {
+  detail: 'detail',
+  input: 'input',
+  schedule: 'schedule',
+} as const;
+type HomeModalToggleActionTypes = typeof HomeModalToggleActionType[keyof typeof HomeModalToggleActionType];
+
 const Home = () => {
   const [monthNum, setMonthNum] = useState<number>(1);
   const [yearNum, setYearNum] = useState<number>(0);
-  const [modalShowValue, setmodalShowValue] = useState<boolean>(false);
-  const [scheduleModal, setScheduleModal] = useState<boolean>(false);
   const [scheduleData, setScheduleData] = useState<[]>([]);
+  const [dayScheduleData, setDayScheduleData] = useState<[]>([]);
   const [getDataFlag, setFlag] = useState<boolean>(false);
   const increaseMon = () => {
     const today = new Date();
@@ -118,6 +132,11 @@ const Home = () => {
     day: 0,
     time: '',
   };
+  const initialHomeModalToggleState = {
+    detail: false,
+    input: false,
+    schedule: false,
+  };
 
   const DayReducer: React.Reducer<DayState, DayAction> = (state, action) => {
     switch (action.type) {
@@ -161,11 +180,25 @@ const Home = () => {
         return { ...state, time: action.payload.time };
     }
   };
+  const HomeModalToggleReducer: React.Reducer<HomeModalToggleState, HomeModalToggleAction> = (state, action) => {
+    switch (action.type) {
+      case HomeModalToggleActionType.detail:
+        return { ...state, detail: action.payload.detail };
+      case HomeModalToggleActionType.input:
+        return { ...state, input: action.payload.input };
+      case HomeModalToggleActionType.schedule:
+        return { ...state, schedule: action.payload.schedule };
+    }
+  };
 
   const [dayState, dayDispatch] = useReducer(DayReducer, initialDayState);
   const [scheduleErrorState, scheduleErrorDispatch] = useReducer(ScheduleErrorReducer, initialScheduleErrorState);
   const [scheduleState, scheduleDispatch] = useReducer(ScheduleReducer, initialScheduleState);
   const [scheduleDetailState, scheduleDetailDispatch] = useReducer(ScheduleDetailReducer, initialScheduleDetailState);
+  const [homeModalToggleState, homeModalToggleDispatch] = useReducer(
+    HomeModalToggleReducer,
+    initialHomeModalToggleState
+  );
 
   const handleYearValue = (num: number) => {
     dayDispatch({ type: DayActionType.year, payload: { ...dayState, year: num } });
@@ -209,24 +242,40 @@ const Home = () => {
   const handleScheduleDetailTimeValue = (value: string) => {
     scheduleDetailDispatch({ type: ScheduleDetailActionType.time, payload: { ...scheduleDetailState, time: value } });
   };
+  const handleHomeModalDetailToggle = (bool: boolean) => {
+    homeModalToggleDispatch({
+      type: HomeModalToggleActionType.detail,
+      payload: { ...homeModalToggleState, detail: bool },
+    });
+  };
+  const handleHomeModalInputToggle = (bool: boolean) => {
+    homeModalToggleDispatch({
+      type: HomeModalToggleActionType.input,
+      payload: { ...homeModalToggleState, input: bool },
+    });
+  };
+  const handleHomeModalScheduleToggle = (bool: boolean) => {
+    homeModalToggleDispatch({
+      type: HomeModalToggleActionType.schedule,
+      payload: { ...homeModalToggleState, schedule: bool },
+    });
+  };
 
   return {
     monthNum,
     yearNum,
-    modalShowValue,
-    scheduleModal,
     dayState,
     scheduleErrorState,
     scheduleState,
     scheduleDetailState,
     scheduleData,
+    dayScheduleData,
+    homeModalToggleState,
     getDataFlag,
     setMonthNum,
     setYearNum,
     increaseMon,
     decreaseMon,
-    setmodalShowValue,
-    setScheduleModal,
     scheduleDispatch,
     scheduleDetailDispatch,
     handleYearValue,
@@ -242,7 +291,11 @@ const Home = () => {
     handleScheduleDetailMonthValue,
     handleScheduleDetailDayValue,
     handleScheduleDetailTimeValue,
+    handleHomeModalDetailToggle,
+    handleHomeModalInputToggle,
+    handleHomeModalScheduleToggle,
     setScheduleData,
+    setDayScheduleData,
     setFlag,
   };
 };
@@ -252,20 +305,18 @@ export const HomeContainer = createContainer(Home);
 export type HomeContainerType = {
   monthNum: number;
   yearNum: number;
-  modalShowValue: boolean;
-  scheduleModal: boolean;
   dayState: DayState;
   scheduleErrorState: ScheduleErrorState;
   scheduleState: ScheduleState;
   scheduleDetailState: ScheduleDetailState;
   scheduleData: [];
+  dayScheduleData: [];
+  homeModalToggleState: HomeModalToggleState;
   getDataFlag: boolean;
   setMonthNum: React.Dispatch<React.SetStateAction<number>>;
   setYearNum: React.Dispatch<React.SetStateAction<number>>;
   increaseMon: () => void;
   decreaseMon: () => void;
-  setmodalShowValue: React.Dispatch<React.SetStateAction<boolean>>;
-  setScheduleModal: React.Dispatch<React.SetStateAction<boolean>>;
   scheduleDispatch: React.Dispatch<ScheduleAction>;
   scheduleDetailDispatch: React.Dispatch<ScheduleDetailAction>;
   handleYearValue: (num: number) => void;
@@ -281,6 +332,10 @@ export type HomeContainerType = {
   handleScheduleDetailMonthValue: (num: number) => void;
   handleScheduleDetailDayValue: (num: number) => void;
   handleScheduleDetailTimeValue: (value: string) => void;
+  handleHomeModalDetailToggle: (bool: boolean) => void;
+  handleHomeModalInputToggle: (bool: boolean) => void;
+  handleHomeModalScheduleToggle: (bool: boolean) => void;
   setScheduleData: React.Dispatch<React.SetStateAction<[]>>;
+  setDayScheduleData: React.Dispatch<React.SetStateAction<[]>>;
   setFlag: React.Dispatch<React.SetStateAction<boolean>>;
 };

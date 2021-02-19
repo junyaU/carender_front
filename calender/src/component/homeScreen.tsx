@@ -6,6 +6,7 @@ import {
   showScheduleDetailModal,
   deleteSchedule,
   closeInputModal,
+  openScheduleModal,
 } from '../services/homeService';
 import '../styles/home.css';
 import { Button, Modal } from '@material-ui/core';
@@ -50,8 +51,8 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
       week: weeks[new Date(nowYear, nowMonth - 1, w).getDay()],
       color:
         w === today.getDate() && today.getMonth() + 1 === nowMonth && nowYear === today.getFullYear()
-          ? '#FF6666'
-          : '#FFFFFF',
+          ? '#ff6666'
+          : '#ffffff',
       data: [],
     };
     daysArr.push(dayData);
@@ -68,7 +69,7 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
           month: nowMonth - 1,
           day: day.getDate(),
           week: weeks[day.getDay()],
-          color: '#FFFFFF',
+          color: '#ffffff',
           data: [],
         });
       }
@@ -80,7 +81,7 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
           month: nowMonth + 1,
           day: day.getDate(),
           week: weeks[day.getDay()],
-          color: '#FFFFFF',
+          color: '#ffffff',
           data: [],
         });
       }
@@ -180,23 +181,33 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
                 </p>
                 {day.data.map((data: ScheduleDataType, s) => (
                   <div>
-                    <p
-                      className="plan-name"
-                      key={s}
-                      data-id={data.Id}
-                      data-name={data.Name}
-                      data-year={data.Year}
-                      data-month={data.Month}
-                      data-day={data.Day}
-                      data-time={data.ScheduleTime}
-                      onClick={(e) => showScheduleDetailModal(e, homeContainer)}
-                      style={{ backgroundColor: data.Color }}
-                    >
-                      {data.Name.length > 5 ? `${data.Name.slice(0, 5)}...` : data.Name}
-                      <span className="plan-time">{data.ScheduleTime}</span>
-                    </p>
+                    {s < 2 && (
+                      <p
+                        className="plan-name"
+                        key={s}
+                        data-id={data.Id}
+                        data-name={data.Name}
+                        data-year={data.Year}
+                        data-month={data.Month}
+                        data-day={data.Day}
+                        data-time={data.ScheduleTime}
+                        onClick={(e) => showScheduleDetailModal(e, homeContainer)}
+                        style={{ backgroundColor: data.Color }}
+                      >
+                        {data.Name.length > 5 ? `${data.Name.slice(0, 5)}...` : data.Name}
+                        <span className="plan-time">{data.ScheduleTime}</span>
+                      </p>
+                    )}
                   </div>
                 ))}
+                {day.data.length > 2 && (
+                  <p
+                    className="other-schedule"
+                    onClick={() => openScheduleModal(homeContainer, day.data, day.year, day.month, day.day)}
+                  >
+                    他{day.data.length - 2}件を表示...
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -253,7 +264,7 @@ const InputModal: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({
 
   return (
     <Modal
-      open={homeContainer.modalShowValue}
+      open={homeContainer.homeModalToggleState.input}
       onClose={() => closeInputModal(homeContainer)}
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description"
@@ -302,11 +313,37 @@ const InputModal: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({
   );
 });
 
+const ScheduleModal: React.FC<{ homeContainer: HomeContainerType }> = ({ homeContainer }) => {
+  return (
+    <Modal
+      open={homeContainer.homeModalToggleState.schedule}
+      onClose={() => homeContainer.handleHomeModalScheduleToggle(false)}
+      aria-labelledby="simple-modal-title"
+      aria-describedby="simple-modal-description"
+    >
+      <div className="modal-content-wrapper">
+        <h3>
+          {homeContainer.scheduleDetailState.year}年{homeContainer.scheduleDetailState.month}月
+          {homeContainer.scheduleDetailState.day}日のスケジュール
+        </h3>
+        <div>
+          {homeContainer.dayScheduleData.map((data: ScheduleDataType, i) => (
+            <div key={i} className="day-schedule-wrapper" style={{ backgroundColor: data.Color }}>
+              <p className="time-text">{data.ScheduleTime}</p>
+              <h4>{data.Name}</h4>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
 const ScheduleDetailModal: React.FC<{ homeContainer: HomeContainerType }> = ({ homeContainer }) => {
   return (
     <Modal
-      open={homeContainer.scheduleModal}
-      onClose={() => homeContainer.setScheduleModal(false)}
+      open={homeContainer.homeModalToggleState.detail}
+      onClose={() => homeContainer.handleHomeModalDetailToggle(false)}
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description"
     >
@@ -341,6 +378,7 @@ const HomeScreen: React.FC = () => {
       <Calender homeContainer={homeContainer} />
       <ButtonArea homeContainer={homeContainer} />
       <InputModal homeContainer={homeContainer} />
+      <ScheduleModal homeContainer={homeContainer} />
       <ScheduleDetailModal homeContainer={homeContainer} />
     </div>
   );
