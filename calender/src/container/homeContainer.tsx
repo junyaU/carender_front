@@ -32,6 +32,7 @@ type ScheduleErrorTypes = typeof ScheduleErrorActionType[keyof typeof ScheduleEr
 type ScheduleState = {
   name: string;
   time: string;
+  color: string;
 };
 type ScheduleAction = {
   type: ScheduleActionTypes;
@@ -40,6 +41,7 @@ type ScheduleAction = {
 const ScheduleActionType = {
   name: 'name',
   time: 'time',
+  color: 'color',
 } as const;
 type ScheduleActionTypes = typeof ScheduleActionType[keyof typeof ScheduleActionType];
 
@@ -106,6 +108,7 @@ const Home = () => {
   const initialScheduleState = {
     name: '',
     time: '',
+    color: '',
   };
   const initialScheduleDetailState = {
     id: 0,
@@ -138,6 +141,8 @@ const Home = () => {
         return { ...state, name: action.payload.name };
       case ScheduleActionType.time:
         return { ...state, time: action.payload.time };
+      case ScheduleActionType.color:
+        return { ...state, color: action.payload.color };
     }
   };
   const ScheduleDetailReducer: React.Reducer<ScheduleDetailState, ScheduleDetailAction> = (state, action) => {
@@ -183,6 +188,9 @@ const Home = () => {
   const handleScheduleTimeValue = (value: string) => {
     scheduleDispatch({ type: ScheduleActionType.time, payload: { ...scheduleState, time: value } });
   };
+  const handleScheduleColorValue = (value: string) => {
+    scheduleDispatch({ type: ScheduleActionType.color, payload: { ...scheduleState, color: value } });
+  };
   const handleScheduleDetailIdValue = (num: number) => {
     scheduleDetailDispatch({ type: ScheduleDetailActionType.id, payload: { ...scheduleDetailState, id: num } });
   };
@@ -219,12 +227,15 @@ const Home = () => {
     decreaseMon,
     setmodalShowValue,
     setScheduleModal,
+    scheduleDispatch,
+    scheduleDetailDispatch,
     handleYearValue,
     handleMonthValue,
     handleDateValue,
     handleScheduleNameError,
     handleScheduleNameValue,
     handleScheduleTimeValue,
+    handleScheduleColorValue,
     handleScheduleDetailIdValue,
     handleScheduleDetailNameValue,
     handleScheduleDetailYearValue,
@@ -255,12 +266,15 @@ export type HomeContainerType = {
   decreaseMon: () => void;
   setmodalShowValue: React.Dispatch<React.SetStateAction<boolean>>;
   setScheduleModal: React.Dispatch<React.SetStateAction<boolean>>;
+  scheduleDispatch: React.Dispatch<ScheduleAction>;
+  scheduleDetailDispatch: React.Dispatch<ScheduleDetailAction>;
   handleYearValue: (num: number) => void;
   handleMonthValue: (num: number) => void;
   handleDateValue: (num: number) => void;
   handleScheduleNameError: (value: { error: boolean; message: string }) => void;
   handleScheduleNameValue: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   handleScheduleTimeValue: (value: string) => void;
+  handleScheduleColorValue: (value: string) => void;
   handleScheduleDetailIdValue: (num: number) => void;
   handleScheduleDetailNameValue: (value: string) => void;
   handleScheduleDetailYearValue: (num: number) => void;

@@ -51,8 +51,8 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     return;
   }
 
-  if (!homeContainer.scheduleState.name || homeContainer.scheduleState.name.length > 6) {
-    homeContainer.handleScheduleNameError({ error: true, message: '１文字以上6文字以下で入力してください' });
+  if (!homeContainer.scheduleState.name) {
+    homeContainer.handleScheduleNameError({ error: true, message: '１文字以上で入力してください' });
     return;
   } else {
     homeContainer.handleScheduleNameError({ error: false, message: '' });
@@ -60,6 +60,11 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
 
   if (!homeContainer.scheduleState.time) {
     alert('時間を選択してください');
+    return;
+  }
+
+  if (!homeContainer.scheduleState.color) {
+    alert('テーマカラーを選択してください');
     return;
   }
 
@@ -73,6 +78,7 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     month: String(homeContainer.dayState.month),
     day: String(homeContainer.dayState.date),
     scheduledTime: homeContainer.scheduleState.time,
+    color: homeContainer.scheduleState.color,
   };
   Object.entries(data).forEach(([key, value]) => {
     formData.append(key, value);
@@ -84,6 +90,9 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     return;
   }
   homeContainer.setmodalShowValue(false);
+  homeContainer.handleScheduleTimeValue('');
+  homeContainer.scheduleDispatch({ type: 'name', payload: { ...homeContainer.scheduleState, name: '' } });
+  homeContainer.handleScheduleColorValue('');
   homeContainer.setFlag((prev) => !prev);
 };
 
@@ -95,7 +104,13 @@ export const deleteSchedule = async (homeContainer: HomeContainerType) => {
   const formData: FormData = new FormData();
   formData.append('id', String(homeContainer.scheduleDetailState.id));
   await axios.post(apiUrl, formData);
-  homeContainer.handleScheduleTimeValue('');
   homeContainer.setScheduleModal(false);
   homeContainer.setFlag((prev) => !prev);
+};
+
+export const closeInputModal = (homeContainer: HomeContainerType) => {
+  homeContainer.setmodalShowValue(false);
+  homeContainer.scheduleDispatch({ type: 'name', payload: { ...homeContainer.scheduleState, name: '' } });
+  homeContainer.handleScheduleColorValue('');
+  homeContainer.handleScheduleTimeValue('');
 };

@@ -5,6 +5,7 @@ import {
   registerSchedule,
   showScheduleDetailModal,
   deleteSchedule,
+  closeInputModal,
 } from '../services/homeService';
 import '../styles/home.css';
 import { Button, Modal } from '@material-ui/core';
@@ -21,6 +22,7 @@ type ScheduleDataType = {
   Month: string;
   Day: string;
   ScheduleTime: StaticRange;
+  Color: string;
 };
 
 type CalenderDayType = {
@@ -177,19 +179,23 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
                   {day.day}
                 </p>
                 {day.data.map((data: ScheduleDataType, s) => (
-                  <p
-                    className="plan-name"
-                    key={s}
-                    data-id={data.Id}
-                    data-name={data.Name}
-                    data-year={data.Year}
-                    data-month={data.Month}
-                    data-day={data.Day}
-                    data-time={data.ScheduleTime}
-                    onClick={(e) => showScheduleDetailModal(e, homeContainer)}
-                  >
-                    {data.Name}
-                  </p>
+                  <div>
+                    <p
+                      className="plan-name"
+                      key={s}
+                      data-id={data.Id}
+                      data-name={data.Name}
+                      data-year={data.Year}
+                      data-month={data.Month}
+                      data-day={data.Day}
+                      data-time={data.ScheduleTime}
+                      onClick={(e) => showScheduleDetailModal(e, homeContainer)}
+                      style={{ backgroundColor: data.Color }}
+                    >
+                      {data.Name.length > 5 ? `${data.Name.slice(0, 5)}...` : data.Name}
+                      <span className="plan-time">{data.ScheduleTime}</span>
+                    </p>
+                  </div>
                 ))}
               </div>
             ))}
@@ -227,10 +233,28 @@ const ButtonArea: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({
 
 const InputModal: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ homeContainer }) => {
   const times = timeData();
+  const colorData = [
+    {
+      className: 'color-circle color-default',
+      dataColor: '#dcdcdc',
+      choiced: homeContainer.scheduleState.color === '#dcdcdc' ? 'solid 3px #aaaaaa' : '',
+    },
+    {
+      className: 'color-circle color-red',
+      dataColor: '#ff6600',
+      choiced: homeContainer.scheduleState.color === '#ff6600' ? 'solid 3px #ff3333' : '',
+    },
+    {
+      className: 'color-circle color-blue',
+      dataColor: '#0099ff',
+      choiced: homeContainer.scheduleState.color === '#0099ff' ? 'solid 3px #0033cc' : '',
+    },
+  ];
+
   return (
     <Modal
       open={homeContainer.modalShowValue}
-      onClose={() => homeContainer.setmodalShowValue(false)}
+      onClose={() => closeInputModal(homeContainer)}
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description"
     >
@@ -245,7 +269,25 @@ const InputModal: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({
           onChange={(e: React.KeyboardEvent<HTMLInputElement>) => homeContainer.handleScheduleNameValue(e)}
           defaultValue={homeContainer.scheduleState.name}
         />
-        <Select options={times} onChange={(item: any) => homeContainer.handleScheduleTimeValue(item.value)} />
+        <Select
+          placeholder="予定時間..."
+          options={times}
+          onChange={(item: any) => homeContainer.handleScheduleTimeValue(item.value)}
+          className="select-input"
+        />
+        <h4 className="color-select-text">テーマカラー</h4>
+        <div className="color-select-wrapper">
+          {colorData.map((item, i) => (
+            <p
+              className={item.className}
+              data-color={item.dataColor}
+              onClick={(e) =>
+                homeContainer.handleScheduleColorValue(String(e.currentTarget.getAttribute('data-color')))
+              }
+              style={{ border: item.choiced }}
+            ></p>
+          ))}
+        </div>
         <Button
           className="button"
           variant="contained"
