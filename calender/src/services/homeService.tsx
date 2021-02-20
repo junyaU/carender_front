@@ -128,3 +128,29 @@ export const openScheduleModal = (
   homeContainer.setDayScheduleData(data);
   homeContainer.handleHomeModalScheduleToggle(true);
 };
+
+export const editSchedule = async (homeContainer: HomeContainerType) => {
+  if (!homeContainer.scheduleDetailState.name) {
+    homeContainer.handleScheduleNameError({ error: true, message: '１文字以上入力してください' });
+    return;
+  }
+
+  const apiUrl: string = 'http://localhost:8080/editSchedule';
+  const formData: FormData = new FormData();
+  const data = {
+    id: String(homeContainer.scheduleDetailState.id),
+    name: homeContainer.scheduleDetailState.name,
+    time: homeContainer.scheduleDetailState.time,
+  };
+  Object.entries(data).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
+
+  const response: AxiosResponse = await axios.post(apiUrl, formData);
+  if (!response.data) {
+    alert('正常に更新できませんでした');
+    return;
+  }
+  getScheduleData(homeContainer);
+  homeContainer.handleHomeModalEditToggle(false);
+};

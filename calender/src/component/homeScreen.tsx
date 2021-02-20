@@ -7,6 +7,7 @@ import {
   deleteSchedule,
   closeInputModal,
   openScheduleModal,
+  editSchedule,
 } from '../services/homeService';
 import '../styles/home.css';
 import { Button, Modal } from '@material-ui/core';
@@ -354,14 +355,66 @@ const ScheduleDetailModal: React.FC<{ homeContainer: HomeContainerType }> = ({ h
         </h3>
         <p>{homeContainer.scheduleDetailState.time}</p>
         <h2>{homeContainer.scheduleDetailState.name}</h2>
+        <div className="schedule-button-wrapper">
+          <Button
+            className="button"
+            variant="contained"
+            color="inherit"
+            size="large"
+            onClick={() => homeContainer.handleHomeModalEditToggle(true)}
+          >
+            編集
+          </Button>
+          <Button
+            className="button"
+            variant="outlined"
+            color="secondary"
+            size="large"
+            onClick={() => deleteSchedule(homeContainer)}
+          >
+            削除
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+};
+
+const ScheduleEditModal: React.FC<{ homeContainer: HomeContainerType }> = ({ homeContainer }) => {
+  const times = timeData();
+  return (
+    <Modal
+      open={homeContainer.homeModalToggleState.edit}
+      onClose={() => homeContainer.handleHomeModalEditToggle(false)}
+      aria-labelledby="simple-modal-title"
+      aria-describedby="simple-modal-description"
+    >
+      <div className="modal-content-wrapper">
+        <h4>スケジュール編集</h4>
+        <InputArea
+          label="スケジュール名"
+          defaultValue={homeContainer.scheduleDetailState.name}
+          error={homeContainer.scheduleErrorState.name.error}
+          helperText={homeContainer.scheduleErrorState.name.message}
+          onChange={(e: React.KeyboardEvent<HTMLInputElement>) =>
+            homeContainer.handleScheduleDetailNameValue(e.currentTarget.value)
+          }
+        />
+        <Select
+          placeholder="予定時間..."
+          options={times}
+          onChange={(item: any) => homeContainer.handleScheduleDetailTimeValue(item.value)}
+          className="select-input"
+          defaultValue={times.filter((data) => data.value === homeContainer.scheduleDetailState.time)}
+        />
         <Button
           className="button"
           variant="contained"
-          color="secondary"
+          color="primary"
           size="large"
-          onClick={() => deleteSchedule(homeContainer)}
+          onClick={() => editSchedule(homeContainer)}
         >
-          削除
+          登録
         </Button>
       </div>
     </Modal>
@@ -380,6 +433,7 @@ const HomeScreen: React.FC = () => {
       <InputModal homeContainer={homeContainer} />
       <ScheduleModal homeContainer={homeContainer} />
       <ScheduleDetailModal homeContainer={homeContainer} />
+      <ScheduleEditModal homeContainer={homeContainer} />
     </div>
   );
 };

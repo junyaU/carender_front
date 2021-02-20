@@ -71,6 +71,7 @@ type HomeModalToggleState = {
   detail: boolean;
   input: boolean;
   schedule: boolean;
+  edit: boolean;
 };
 type HomeModalToggleAction = {
   type: HomeModalToggleActionTypes;
@@ -80,6 +81,7 @@ const HomeModalToggleActionType = {
   detail: 'detail',
   input: 'input',
   schedule: 'schedule',
+  edit: 'edit',
 } as const;
 type HomeModalToggleActionTypes = typeof HomeModalToggleActionType[keyof typeof HomeModalToggleActionType];
 
@@ -89,6 +91,7 @@ const Home = () => {
   const [scheduleData, setScheduleData] = useState<[]>([]);
   const [dayScheduleData, setDayScheduleData] = useState<[]>([]);
   const [getDataFlag, setFlag] = useState<boolean>(false);
+
   const increaseMon = () => {
     const today = new Date();
     const nowMonth = today.getMonth() + monthNum;
@@ -136,6 +139,7 @@ const Home = () => {
     detail: false,
     input: false,
     schedule: false,
+    edit: false,
   };
 
   const DayReducer: React.Reducer<DayState, DayAction> = (state, action) => {
@@ -188,6 +192,8 @@ const Home = () => {
         return { ...state, input: action.payload.input };
       case HomeModalToggleActionType.schedule:
         return { ...state, schedule: action.payload.schedule };
+      case HomeModalToggleActionType.edit:
+        return { ...state, edit: action.payload.edit };
     }
   };
 
@@ -260,6 +266,9 @@ const Home = () => {
       payload: { ...homeModalToggleState, schedule: bool },
     });
   };
+  const handleHomeModalEditToggle = (bool: boolean) => {
+    homeModalToggleDispatch({ type: HomeModalToggleActionType.edit, payload: { ...homeModalToggleState, edit: bool } });
+  };
 
   return {
     monthNum,
@@ -294,6 +303,7 @@ const Home = () => {
     handleHomeModalDetailToggle,
     handleHomeModalInputToggle,
     handleHomeModalScheduleToggle,
+    handleHomeModalEditToggle,
     setScheduleData,
     setDayScheduleData,
     setFlag,
@@ -335,6 +345,7 @@ export type HomeContainerType = {
   handleHomeModalDetailToggle: (bool: boolean) => void;
   handleHomeModalInputToggle: (bool: boolean) => void;
   handleHomeModalScheduleToggle: (bool: boolean) => void;
+  handleHomeModalEditToggle: (bool: boolean) => void;
   setScheduleData: React.Dispatch<React.SetStateAction<[]>>;
   setDayScheduleData: React.Dispatch<React.SetStateAction<[]>>;
   setFlag: React.Dispatch<React.SetStateAction<boolean>>;

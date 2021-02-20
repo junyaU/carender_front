@@ -125,3 +125,10 @@
 .time-text {
   margin-right: 3%;
 }
+
+.schedule-button-wrapper {
+  display: flex;
+  justify-content: space-around;
+  width: 50%;
+  margin: 0 auto;
+}
