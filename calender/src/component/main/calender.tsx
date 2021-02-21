@@ -19,6 +19,7 @@ type CalenderDayType = {
   day: number;
   week: string;
   data: any[];
+  fontColor: string;
 };
 
 const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ homeContainer }) => {
@@ -29,7 +30,15 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
   const startDate = new Date(nowYear, nowMonth - 1, 1);
   const endDate = new Date(nowYear, nowMonth, 0);
 
-  const daysArr: { year: number; month: number; day: number; week: string; color: string; data: any[] }[] = [];
+  const daysArr: {
+    year: number;
+    month: number;
+    day: number;
+    week: string;
+    color: string;
+    data: any[];
+    fontColor: string;
+  }[] = [];
   for (let w = startDate.getDate(); w <= endDate.getDate(); w++) {
     const dayData = {
       year: nowYear,
@@ -41,6 +50,7 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
           ? '#ff6666'
           : '#ffffff',
       data: [],
+      fontColor: '#000000',
     };
     daysArr.push(dayData);
   }
@@ -58,6 +68,7 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
           week: weeks[day.getDay()],
           color: '#ffffff',
           data: [],
+          fontColor: '#aaaaaa',
         });
       }
     } else if (dataType === nextType) {
@@ -70,6 +81,7 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
           week: weeks[day.getDay()],
           color: '#ffffff',
           data: [],
+          fontColor: '#aaaaaa',
         });
       }
     }
@@ -158,7 +170,7 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
               <div className="cell" key={ii}>
                 <p
                   className="day-text"
-                  style={{ backgroundColor: day.color }}
+                  style={{ backgroundColor: day.color, color: day.fontColor }}
                   data-year={day.year}
                   data-month={day.month}
                   data-day={day.day}

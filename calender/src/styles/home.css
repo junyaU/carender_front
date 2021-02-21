@@ -132,3 +132,16 @@
   width: 50%;
   margin: 0 auto;
 }
+
+.user-area {
+  position: absolute;
+  right: 3%;
+  top: 2.5%;
+  width: 10%;
+}
+
+.user-name {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 5%;
+}

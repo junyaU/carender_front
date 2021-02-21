@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import { HomeContainerType } from '../container/homeContainer';
 import axios, { AxiosResponse } from 'axios';
 
-type TokenType = {
+export type TokenType = {
   sub: string;
   name: string;
   iss: string;

@@ -101,9 +101,7 @@ export const login = async (authContainer: AuthContainerType) => {
   window.location.href = '/home';
 };
 
-export const aaa = () => {
-  const sss = Cookies.get('calenderToken');
-  if (!sss) {
-    window.location.href = '/login';
-  }
+export const logout = () => {
+  Cookies.remove('calenderToken');
+  window.location.href = '/';
 };
