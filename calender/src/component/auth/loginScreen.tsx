@@ -1,9 +1,9 @@
 import React from 'react';
-import { InputArea } from './UI/Input';
+import { InputArea } from '../UI/Input';
 import { Button } from '@material-ui/core';
-import { AuthContainer, AuthContainerType } from '../container/authContainer';
+import { AuthContainer, AuthContainerType } from '../../container/authContainer';
 import { useContainer } from 'unstated-next';
-import { login } from '../services/authService';
+import { login } from '../../services/authService';
 
 const HeadText: React.FC = React.memo(() => {
   return <h1>ログイン</h1>;

@@ -50,19 +50,16 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     window.location.href = '/';
     return;
   }
-
   if (!homeContainer.scheduleState.name) {
     homeContainer.handleScheduleNameError({ error: true, message: '１文字以上で入力してください' });
     return;
   } else {
     homeContainer.handleScheduleNameError({ error: false, message: '' });
   }
-
   if (!homeContainer.scheduleState.time) {
     alert('時間を選択してください');
     return;
   }
-
   if (!homeContainer.scheduleState.color) {
     alert('テーマカラーを選択してください');
     return;
@@ -79,6 +76,7 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
     day: String(homeContainer.dayState.date),
     scheduledTime: homeContainer.scheduleState.time,
     color: homeContainer.scheduleState.color,
+    token,
   };
   Object.entries(data).forEach(([key, value]) => {
     formData.append(key, value);
@@ -97,13 +95,30 @@ export const registerSchedule = async (homeContainer: HomeContainerType) => {
 };
 
 export const deleteSchedule = async (homeContainer: HomeContainerType) => {
+  const token: string | undefined = Cookies.get('calenderToken');
+  if (!token) {
+    window.location.href = '/';
+    return;
+  }
+
   const deleteConfirm = window.confirm('この予定を削除しますか？');
   if (!deleteConfirm) return;
 
   const apiUrl: string = 'http://localhost:8080/deleteSchedule';
   const formData: FormData = new FormData();
-  formData.append('id', String(homeContainer.scheduleDetailState.id));
-  await axios.post(apiUrl, formData);
+  const data = {
+    id: String(homeContainer.scheduleDetailState.id),
+    token,
+  };
+  Object.entries(data).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
+
+  const response: AxiosResponse = await axios.post(apiUrl, formData);
+  if (!response.data) {
+    alert('削除できませんでした');
+    return;
+  }
   homeContainer.handleHomeModalDetailToggle(false);
   homeContainer.setFlag((prev) => !prev);
 };
@@ -135,12 +150,19 @@ export const editSchedule = async (homeContainer: HomeContainerType) => {
     return;
   }
 
+  const token: string | undefined = Cookies.get('calenderToken');
+  if (!token) {
+    window.location.href = '/';
+    return;
+  }
+
   const apiUrl: string = 'http://localhost:8080/editSchedule';
   const formData: FormData = new FormData();
   const data = {
     id: String(homeContainer.scheduleDetailState.id),
     name: homeContainer.scheduleDetailState.name,
     time: homeContainer.scheduleDetailState.time,
+    token,
   };
   Object.entries(data).forEach(([key, value]) => {
     formData.append(key, value);

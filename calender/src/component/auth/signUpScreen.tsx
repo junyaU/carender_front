@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
-import '../styles/signUp.css';
-import { AuthContainer, AuthContainerType } from '../container/authContainer';
+import '../../styles/signUp.css';
+import { AuthContainer, AuthContainerType } from '../../container/authContainer';
 import { useContainer } from 'unstated-next';
-import { createUser } from '../services/authService';
-import { InputArea } from './UI/Input';
+import { createUser } from '../../services/authService';
+import { InputArea } from '../UI/Input';
 
 const HeadText = React.memo(() => {
   return <h1>サインアップ</h1>;
