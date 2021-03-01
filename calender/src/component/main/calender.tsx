@@ -158,32 +158,31 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
       </h2>
       <div className="calender-wrapper">
         <div className="weeks-wrapper">
-          {weeks.map((item, i) => (
-            <div className="cell week-cell">
+          {weeks.map((item) => (
+            <div className="cell week-cell" key={item}>
               <p className="week-text">{item}</p>
             </div>
           ))}
         </div>
         {parseDaysArr.map((week, i) => (
           <div className="day-wrapper" key={i}>
-            {week.map((day, ii) => (
-              <div className="cell" key={ii}>
-                <p
-                  className="day-text"
-                  style={{ backgroundColor: day.color, color: day.fontColor }}
-                  data-year={day.year}
-                  data-month={day.month}
-                  data-day={day.day}
-                  onClick={(e) => showInputModal(e, homeContainer)}
-                >
+            {week.map((day) => (
+              <div
+                className="cell"
+                key={day.day}
+                data-year={day.year}
+                data-month={day.month}
+                data-day={day.day}
+                onClick={(e) => showInputModal(e, homeContainer)}
+              >
+                <p className="day-text" style={{ backgroundColor: day.color, color: day.fontColor }}>
                   {day.day}
                 </p>
                 {day.data.map((data: ScheduleDataType, s) => (
-                  <div>
+                  <div key={day.day}>
                     {s < 2 && (
                       <p
                         className="plan-name"
-                        key={s}
                         data-id={data.Id}
                         data-name={data.Name}
                         data-year={data.Year}
@@ -202,7 +201,7 @@ const Calender: React.FC<{ homeContainer: HomeContainerType }> = React.memo(({ h
                 {day.data.length > 2 && (
                   <p
                     className="other-schedule"
-                    onClick={() => openScheduleModal(homeContainer, day.data, day.year, day.month, day.day)}
+                    onClick={(e) => openScheduleModal(e, homeContainer, day.data, day.year, day.month, day.day)}
                   >
                     他{day.data.length - 2}件を表示...
                   </p>

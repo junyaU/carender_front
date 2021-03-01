@@ -35,6 +35,7 @@ export const showScheduleDetailModal = (
   e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   homeContainer: HomeContainerType
 ) => {
+  e.stopPropagation();
   homeContainer.handleScheduleDetailIdValue(Number(e.currentTarget.getAttribute('data-id')));
   homeContainer.handleScheduleDetailNameValue(String(e.currentTarget.getAttribute('data-name')));
   homeContainer.handleScheduleDetailYearValue(Number(e.currentTarget.getAttribute('data-year')));
@@ -131,12 +132,14 @@ export const closeInputModal = (homeContainer: HomeContainerType) => {
 };
 
 export const openScheduleModal = (
+  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   homeContainer: HomeContainerType,
   data: any,
   year: number,
   month: number,
   day: number
 ) => {
+  e.stopPropagation();
   homeContainer.handleScheduleDetailYearValue(year);
   homeContainer.handleScheduleDetailMonthValue(month);
   homeContainer.handleScheduleDetailDayValue(day);
